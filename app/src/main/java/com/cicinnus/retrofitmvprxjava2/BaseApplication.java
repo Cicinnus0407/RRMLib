@@ -12,6 +12,6 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        RetrofitClient.initClient_BaseUrl(OkHttpManager.getInstance(),Api.BASE_URL);
+        RetrofitClient.initClient_BaseUrl(null,Api.BASE_URL);
     }
 }

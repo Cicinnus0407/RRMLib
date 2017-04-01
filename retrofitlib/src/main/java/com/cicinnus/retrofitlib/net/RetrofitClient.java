@@ -1,12 +1,16 @@
 package com.cicinnus.retrofitlib.net;
 
+import com.cicinnus.retrofitlib.net.file_download.FileDownLoadObserver;
 import com.cicinnus.retrofitlib.net.file_upload.FileUploadObserver;
 import com.cicinnus.retrofitlib.net.file_upload.UploadFileRequestBody;
 import com.cicinnus.retrofitlib.utils.SchedulersCompact;
 
 import java.io.File;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
@@ -24,13 +28,14 @@ public class RetrofitClient {
     private OkHttpClient mOkHttpClient;
     private static String mBaseUrl;
 
-    private RetrofitClient(OkHttpClient okHttpClient,String baseUrl) {
+    private RetrofitClient(OkHttpClient okHttpClient, String baseUrl) {
         retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(okHttpClient != null ? okHttpClient : new OkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
+
     }
 
     /**
@@ -39,12 +44,12 @@ public class RetrofitClient {
      * @param okHttpClient
      * @return
      */
-    public static RetrofitClient initClient_BaseUrl(OkHttpClient okHttpClient,@NonNull String baseUrl) {
+    public static RetrofitClient initClient_BaseUrl(OkHttpClient okHttpClient, @NonNull String baseUrl) {
         mBaseUrl = baseUrl;
         if (mInstance == null) {
             synchronized (RetrofitClient.class) {
                 if (mInstance == null) {
-                    mInstance = new RetrofitClient(okHttpClient,baseUrl);
+                    mInstance = new RetrofitClient(okHttpClient, baseUrl);
                 }
             }
         }
@@ -52,8 +57,13 @@ public class RetrofitClient {
     }
 
 
+    /**
+     * 获取Retrofit的实例
+     *
+     * @return
+     */
     public static RetrofitClient getInstance() {
-        if(mBaseUrl==null){
+        if (mBaseUrl == null) {
             throw new RuntimeException("Please initialize Your \"BaseUrl\" in Application before use");
         }
         if (mInstance == null) {
@@ -62,7 +72,14 @@ public class RetrofitClient {
         return mInstance;
     }
 
-    public  <T> T create(Class<T> clz) {
+    /**
+     * 构建请求
+     *
+     * @param clz 请求接口
+     * @param <T>
+     * @return
+     */
+    public <T> T create(Class<T> clz) {
         return retrofit.create(clz);
     }
 
@@ -72,7 +89,7 @@ public class RetrofitClient {
      *
      * @param url                   完整的接口地址
      * @param file                  需要上传的文件
-     * @param fileUploadObserver<T> </> 上传回调
+     * @param fileUploadObserver<T> </> 上传监听回调
      */
     @SuppressWarnings("unchecked")
     public void upLoadFile(String url, File file, FileUploadObserver<ResponseBody> fileUploadObserver) {
@@ -84,5 +101,29 @@ public class RetrofitClient {
                 .subscribe(fileUploadObserver);
     }
 
+
+    /**
+     * 下载单文件，可以是大文件，该方法不支持断点下载
+     *
+     * @param url                  文件地址
+     * @param destDir              存储文件夹
+     * @param fileName             存储文件名
+     * @param fileDownLoadObserver 监听回调
+     */
+    public void downloadFile(@NonNull String url, final String destDir, final String fileName, final FileDownLoadObserver<File> fileDownLoadObserver) {
+        create(BASE_API.class)
+                .downLoadFile(url)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
+                .map(new Function<ResponseBody, File>() {
+                    @Override
+                    public File apply(@NonNull ResponseBody responseBody) throws Exception {
+                        return fileDownLoadObserver.saveFile(responseBody, destDir, fileName);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(fileDownLoadObserver);
+    }
 
 }

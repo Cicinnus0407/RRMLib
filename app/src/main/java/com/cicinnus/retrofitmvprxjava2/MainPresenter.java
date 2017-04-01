@@ -3,9 +3,11 @@ package com.cicinnus.retrofitmvprxjava2;
 import android.app.Activity;
 
 import com.cicinnus.retrofitlib.base.BaseMVPPresenter;
+import com.cicinnus.retrofitlib.utils.NetWorkUtil;
 import com.cicinnus.retrofitlib.utils.SchedulersCompact;
 
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 
@@ -27,6 +29,16 @@ public class MainPresenter extends BaseMVPPresenter<MainContract.IMainView> impl
         mView.showLoading();
         addSubscribeUntilDestroy(mainModel.getMainData()
                 .compose(SchedulersCompact.<ResultBean>applyIoSchedulers())
+                .doOnSubscribe(new Consumer<Disposable>() {
+                    @Override
+                    public void accept(@NonNull Disposable disposable) throws Exception {
+                        if (!NetWorkUtil.isNetworkConnected(mActivity)) {
+                            //没有联网
+                            mView.addMainData("从缓存获取");
+                            disposable.dispose();
+                        }
+                    }
+                })
                 .subscribe(new Consumer<ResultBean>() {
                     @Override
                     public void accept(@NonNull ResultBean resultBean) throws Exception {

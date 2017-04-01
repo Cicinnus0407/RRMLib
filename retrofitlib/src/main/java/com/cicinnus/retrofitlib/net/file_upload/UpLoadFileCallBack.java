@@ -20,16 +20,13 @@ public abstract class UpLoadFileCallBack implements Callback<ResponseBody> {
         onUpLoadFail(t);
     }
 
-    public void onProgressChange(long bytesWritten, long contentLength) {
-        onProgress((int) (bytesWritten*100 / contentLength));
-    }
-
-
     //上传成功的回调
     public abstract void onUpLoadSuccess(ResponseBody t);
 
-    //上传你失败回调
+    //上传失败回调
     public abstract void onUpLoadFail(Throwable e);
+
+    //上传进度监听
     public abstract void onProgress(int progress);
 
 }
