@@ -89,9 +89,8 @@ public class RetrofitClient {
      *
      * @param url                   完整的接口地址
      * @param file                  需要上传的文件
-     * @param fileUploadObserver<T> </> 上传监听回调
+     * @param fileUploadObserver  上传监听回调
      */
-    @SuppressWarnings("unchecked")
     public void upLoadFile(String url, File file, FileUploadObserver<ResponseBody> fileUploadObserver) {
         UploadFileRequestBody uploadFileRequestBody = new UploadFileRequestBody(file, fileUploadObserver);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), uploadFileRequestBody);
