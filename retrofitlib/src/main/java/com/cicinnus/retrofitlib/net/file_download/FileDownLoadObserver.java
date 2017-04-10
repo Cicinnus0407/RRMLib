@@ -41,6 +41,14 @@ public abstract class FileDownLoadObserver<T> extends DefaultObserver<T> {
     //下载进度监听
     public abstract void onProgress(int progress);
 
+    /**
+     * 将文件写入本地
+     * @param responseBody 请求结果全体
+     * @param destFileDir 目标文件夹
+     * @param destFileName 目标文件名
+     * @return 写入完成的文件
+     * @throws IOException IO异常
+     */
     public File saveFile(ResponseBody responseBody, String destFileDir, String destFileName) throws IOException {
         InputStream is = null;
         byte[] buf = new byte[2048];

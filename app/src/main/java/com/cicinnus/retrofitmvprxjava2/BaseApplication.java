@@ -9,9 +9,17 @@ import com.cicinnus.retrofitlib.net.RetrofitClient;
  */
 
 public class BaseApplication extends Application {
+
+    private static BaseApplication instance;
+
+    public static BaseApplication getInstance() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-        RetrofitClient.initClient_BaseUrl(null,Api.BASE_URL);
+        instance = this;
+        RetrofitClient.initClient_BaseUrl(null, Api.BASE_URL);
     }
 }

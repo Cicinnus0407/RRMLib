@@ -17,14 +17,16 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
     private CompositeDisposable disposables2Destroy;// 管理Destroy取消订阅者者
 
 
-
     public BaseMVPPresenter(Activity activity, T view) {
         this.mActivity = activity;
         this.mView = view;
     }
 
 
-    //将调用链加入，直到onStop触发
+    /**
+     * 将调用链加入，直到onStop触发
+     * @param disposable 传入一个disposable实现类，即rx调用链
+     */
     protected void addSubscribeUntilStop(Disposable disposable) {
         if (disposables2Stop == null) {
             disposables2Stop = new CompositeDisposable();
@@ -32,7 +34,9 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
         disposables2Stop.add(disposable);
     }
 
-    //onStop触发停止调用链
+    /**
+     * onStop触发停止调用链
+     */
     private void unSubscribeWhenStop() {
         if (disposables2Stop != null) {
             disposables2Stop.dispose();
@@ -40,7 +44,11 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
         }
     }
 
-    //将调用链 加入，直到调用onDestroy
+    /**
+     * 将调用链 加入，直到调用onDestroy
+     *
+     * @param disposable 传入一个disposable实现类，即rx调用链
+     */
     protected void addSubscribeUntilDestroy(Disposable disposable) {
         if (disposables2Destroy == null) {
             disposables2Destroy = new CompositeDisposable();

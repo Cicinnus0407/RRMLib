@@ -12,7 +12,7 @@ import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
 /**
- * 文件上传与下载接口
+ * 文件上传与下载接口定义
  */
 
 interface BASE_API {

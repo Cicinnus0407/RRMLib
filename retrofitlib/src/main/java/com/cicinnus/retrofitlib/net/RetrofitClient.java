@@ -3,7 +3,7 @@ package com.cicinnus.retrofitlib.net;
 import com.cicinnus.retrofitlib.net.file_download.FileDownLoadObserver;
 import com.cicinnus.retrofitlib.net.file_upload.FileUploadObserver;
 import com.cicinnus.retrofitlib.net.file_upload.UploadFileRequestBody;
-import com.cicinnus.retrofitlib.utils.SchedulersCompact;
+import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 
 import java.io.File;
 

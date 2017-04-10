@@ -3,8 +3,8 @@ package com.cicinnus.retrofitmvprxjava2;
 import android.app.Activity;
 
 import com.cicinnus.retrofitlib.base.BaseMVPPresenter;
+import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 import com.cicinnus.retrofitlib.utils.NetWorkUtil;
-import com.cicinnus.retrofitlib.utils.SchedulersCompact;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -34,8 +34,9 @@ public class MainPresenter extends BaseMVPPresenter<MainContract.IMainView> impl
                     public void accept(@NonNull Disposable disposable) throws Exception {
                         if (!NetWorkUtil.isNetworkConnected(mActivity)) {
                             //没有联网
-                            mView.addMainData("从缓存获取");
+                            mView.addMainData(mainModel.getCacheData());
                             disposable.dispose();
+
                         }
                     }
                 })

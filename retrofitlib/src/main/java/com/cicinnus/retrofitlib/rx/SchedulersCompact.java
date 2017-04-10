@@ -1,4 +1,4 @@
-package com.cicinnus.retrofitlib.utils;
+package com.cicinnus.retrofitlib.rx;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;

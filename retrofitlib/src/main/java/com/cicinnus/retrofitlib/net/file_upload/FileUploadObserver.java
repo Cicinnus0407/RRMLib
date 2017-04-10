@@ -8,6 +8,8 @@ import io.reactivex.observers.DefaultObserver;
 
 public abstract class FileUploadObserver<T> extends DefaultObserver<T> {
 
+
+
     @Override
     public void onNext(T t) {
         onUpLoadSuccess(t);
