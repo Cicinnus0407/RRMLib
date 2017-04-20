@@ -35,8 +35,6 @@ public class MainPresenter extends BaseMVPPresenter<MainContract.IMainView> impl
                         if (!NetWorkUtil.isNetworkConnected(mActivity)) {
                             //没有联网
                             mView.addMainData(mainModel.getCacheData());
-                            disposable.dispose();
-
                         }
                     }
                 })

@@ -74,8 +74,8 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
 
         RetrofitClient
                 .getInstance()
-                .downloadFile("http://static.daidianzuoye.com/2017/2/1490948941321.pdf",
-                        Environment.getExternalStorageDirectory().getAbsolutePath(), "附件1：网上填报操作说明.pdf", new FileDownLoadObserver<File>() {
+                .downloadFile("url",
+                        Environment.getExternalStorageDirectory().getAbsolutePath(), "test.txt", new FileDownLoadObserver<File>() {
                             @Override
                             public void onDownLoadSuccess(File file) {
                                 progressNum.dismiss();
@@ -90,7 +90,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
                             }
 
                             @Override
-                            public void onProgress(int progress) {
+                            public void onProgress(int progress,long total) {
                                 progressNum.setProgress(progress);
                             }
                         });

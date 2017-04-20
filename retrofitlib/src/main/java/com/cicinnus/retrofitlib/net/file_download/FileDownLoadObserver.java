@@ -28,18 +28,13 @@ public abstract class FileDownLoadObserver<T> extends DefaultObserver<T> {
     //可以重写，具体可由子类实现
     @Override
     public void onComplete() {
-
     }
-
-
     //下载成功的回调
     public abstract void onDownLoadSuccess(T t);
-
     //下载失败回调
     public abstract void onDownLoadFail(Throwable throwable);
-
     //下载进度监听
-    public abstract void onProgress(int progress);
+    public abstract void onProgress(int progress,long total);
 
     /**
      * 将文件写入本地
@@ -69,7 +64,7 @@ public abstract class FileDownLoadObserver<T> extends DefaultObserver<T> {
                 sum += len;
                 fos.write(buf, 0, len);
                 final long finalSum = sum;
-                onProgress((int) (finalSum * 100 / total));
+                onProgress((int) (finalSum * 100 / total),total);
             }
             fos.flush();
 

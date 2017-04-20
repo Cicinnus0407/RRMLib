@@ -10,7 +10,7 @@ import android.content.SharedPreferences;
  *  用法:SPUtils.getInstance(context,sp_name)
  *              .putString(key1,value1)
  *              .putString(key2,value2)
- *              .putBoolean(key3,ture)
+ *              .putBoolean(key3,true)
  *              ...
  *              .apply();
  * putXX 之后必须调用apply()方法才会正确
