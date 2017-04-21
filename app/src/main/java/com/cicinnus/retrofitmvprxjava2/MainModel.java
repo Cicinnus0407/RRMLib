@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.cicinnus.retrofitlib.net.RetrofitClient;
 import com.cicinnus.retrofitlib.utils.SPUtils;
-import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 
 import io.reactivex.Observable;
 import io.reactivex.annotations.NonNull;
@@ -26,7 +25,6 @@ public class MainModel {
                 .getInstance()
                 .create(Api.class)
                 .load()
-                .compose(SchedulersCompact.<ResultBean>applyIoSchedulers())
                 .doOnNext(new Consumer<ResultBean>() {
                     @Override
                     public void accept(@NonNull ResultBean resultBean) throws Exception {

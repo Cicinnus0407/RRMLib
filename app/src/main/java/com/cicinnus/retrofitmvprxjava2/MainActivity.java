@@ -1,6 +1,7 @@
 package com.cicinnus.retrofitmvprxjava2;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +10,17 @@ import android.widget.Toast;
 
 import com.cicinnus.retrofitlib.base.BaseMVPActivity;
 import com.cicinnus.retrofitlib.net.RetrofitClient;
+import com.cicinnus.retrofitlib.net.RxApiManager;
 import com.cicinnus.retrofitlib.net.file_download.FileDownLoadObserver;
+import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 
 import java.io.File;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import okhttp3.ResponseBody;
 
 public class MainActivity extends BaseMVPActivity<MainPresenter> implements MainContract.IMainView {
 
@@ -20,6 +29,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
 
     private ProgressDialog progressDialog;
     private ProgressDialog progressNum;
+    private Disposable d;
 
     @Override
     public int getLayout() {
@@ -34,6 +44,12 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
     @Override
     protected void initEventAndData() {
         progressDialog = new ProgressDialog(mContext);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                RxApiManager.getInstance().cancel("d");
+            }
+        });
         tvContent = (TextView) findViewById(R.id.content);
         progressNum = new ProgressDialog(mContext);
         progressNum.setMax(100);
@@ -65,7 +81,32 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
     }
 
     public void getData(View view) {
-        mPresenter.getMainData();
+//        mPresenter.getMainData();
+        progressDialog.show();
+
+        d = RetrofitClient
+                .getInstance()
+                .create(Api.class)
+                .login("wjhapp","wjh123")
+                .compose(SchedulersCompact.<ResponseBody>applyIoSchedulers())
+                .subscribe(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                       tvContent.setText(responseBody.string());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        Log.e("错误信息----", "showError: " + throwable.getMessage());
+
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d("showContent----", "showContent: ");
+                    }
+                });
+        RxApiManager.getInstance().add("d", d);
 
     }
 

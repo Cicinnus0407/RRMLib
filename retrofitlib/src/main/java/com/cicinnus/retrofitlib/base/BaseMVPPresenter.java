@@ -32,6 +32,7 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
             disposables2Stop = new CompositeDisposable();
         }
         disposables2Stop.add(disposable);
+
     }
 
     /**
@@ -54,6 +55,7 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
             disposables2Destroy = new CompositeDisposable();
         }
         disposables2Destroy.add(disposable);
+
     }
 
     /**
