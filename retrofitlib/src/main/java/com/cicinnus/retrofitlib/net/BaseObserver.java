@@ -14,8 +14,6 @@ public abstract class BaseObserver<T> extends DefaultObserver<T> {
         super.onStart();
         onSubscribeStart();
     }
-
-
     @Override
     public void onNext(T t) {
         onSuccess(t);

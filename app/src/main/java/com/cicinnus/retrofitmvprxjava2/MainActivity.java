@@ -47,6 +47,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
+                mPresenter.removeDisposableByTag();
                 RxApiManager.getInstance().cancel("d");
             }
         });

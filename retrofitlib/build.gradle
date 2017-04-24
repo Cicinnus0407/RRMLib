@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "1.0.2"
 
 
     }
@@ -124,10 +124,10 @@ bintray {
         licenses = ["Apache-2.0"]
         publish = true
         version {
-            name = '1.0.0'
-            desc = 'RxJava2+Retrofit2+MVP Lib'
+            name = '1.0.2'
+            desc = '添加状态栏和Services工具类'
             released  = new Date()
-            vcsTag = 'v1.0.0'
+            vcsTag = 'v1.0.2'
             attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
     }

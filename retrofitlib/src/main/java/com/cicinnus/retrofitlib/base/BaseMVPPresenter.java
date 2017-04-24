@@ -1,12 +1,15 @@
 package com.cicinnus.retrofitlib.base;
 
 import android.app.Activity;
+import android.support.v4.util.ArrayMap;
 
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 /**
  * BaseMVPPresenter，封装调用链
+ * 2017-4-24，修改加入调用链方法
+ * 新增可单独取消调用的方法
  */
 
 public class BaseMVPPresenter<T> implements ICorePresenter {
@@ -15,23 +18,33 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
     protected T mView;//Presenter持有的View
     private CompositeDisposable disposables2Stop;// 管理Stop取消订阅者者
     private CompositeDisposable disposables2Destroy;// 管理Destroy取消订阅者者
+    private ArrayMap<String, Disposable> disposable2StopArrayMap;//管理Stop集合
+    private ArrayMap<String, Disposable> disposable2DestroyArrayMap;//管理Destroy集合
 
 
     public BaseMVPPresenter(Activity activity, T view) {
         this.mActivity = activity;
         this.mView = view;
+        disposable2StopArrayMap = new ArrayMap<>();
+        disposable2DestroyArrayMap = new ArrayMap<>();
     }
 
 
     /**
      * 将调用链加入，直到onStop触发
+     *
+     * @param tag        加入调用链时的tag
      * @param disposable 传入一个disposable实现类，即rx调用链
      */
-    protected void addSubscribeUntilStop(Disposable disposable) {
+    protected void addSubscribeUntilStop(String tag, Disposable disposable) {
         if (disposables2Stop == null) {
             disposables2Stop = new CompositeDisposable();
         }
         disposables2Stop.add(disposable);
+        if (disposable2StopArrayMap.containsKey(tag)) {
+            throw new RuntimeException("存在相同的tag: " + tag);
+        }
+        disposable2StopArrayMap.put(tag, disposable);
 
     }
 
@@ -43,19 +56,26 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
             disposables2Stop.dispose();
             disposables2Stop = null;
         }
+        if (disposable2StopArrayMap != null && disposable2StopArrayMap.size() > 0) {
+            disposable2StopArrayMap.clear();
+        }
     }
 
     /**
      * 将调用链 加入，直到调用onDestroy
      *
+     * @param tag        加入调用链时的tag
      * @param disposable 传入一个disposable实现类，即rx调用链
      */
-    protected void addSubscribeUntilDestroy(Disposable disposable) {
+    protected void addSubscribeUntilDestroy(String tag, Disposable disposable) {
         if (disposables2Destroy == null) {
             disposables2Destroy = new CompositeDisposable();
         }
         disposables2Destroy.add(disposable);
-
+        if (disposable2DestroyArrayMap.containsKey(tag)) {
+            throw new RuntimeException("存在相同的tag: " + tag);
+        }
+        disposable2DestroyArrayMap.put(tag, disposable);
     }
 
     /**
@@ -65,6 +85,9 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
         if (disposables2Destroy != null) {
             disposables2Destroy.dispose();
             disposables2Destroy = null;
+        }
+        if (disposable2DestroyArrayMap != null && disposable2DestroyArrayMap.size() > 0) {
+            disposable2DestroyArrayMap.clear();
         }
     }
 
@@ -82,6 +105,36 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
                 disposables2Stop.remove(d);
             }
         }
+
+    }
+
+    /**
+     * 移除多个订阅
+     *
+     * @param tags 订阅时候的tag
+     */
+    public void removeDisposableByTag(String... tags) {
+        if (disposable2DestroyArrayMap.size() > 0) {
+            for (String tag : tags) {
+                if (disposable2DestroyArrayMap.containsKey(tag)) {
+                    disposables2Destroy.remove(disposable2DestroyArrayMap.get(tag));
+                    disposable2DestroyArrayMap.remove(tag);
+                } else {
+                    throw new RuntimeException("没有该tag: "+tag);
+                }
+            }
+        }
+        if (disposable2StopArrayMap.size() > 0) {
+            for (String tag : tags) {
+                if (disposable2StopArrayMap.containsKey(tag)) {
+                    disposables2Stop.remove(disposable2StopArrayMap.get(tag));
+                    disposable2StopArrayMap.remove(tag);
+                }else {
+                    throw new RuntimeException("没有该tag: "+tag);
+                }
+            }
+        }
+
     }
 
     @Override
