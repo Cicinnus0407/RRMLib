@@ -5,10 +5,10 @@
 Retrofit2+RxJava+MVP和常用工具类封装库
 ##用法
 - 方式1
-    - newest-version = 1.0.2
+    - newest-version = 1.0.3
     - Android Studio
         ```
-        compile 'com.cicinnus.RRMLib:retrofitlib:newest-version'
+        com.cicinnus.RRMLib:rrmlib:newest-version'
         ```
 - 方式2
     - Android Studio导入lib
