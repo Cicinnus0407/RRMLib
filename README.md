@@ -1,10 +1,20 @@
 # RRMLib
-Retrofit2+RxJava+MVP封装库
+[![License](https://img.shields.io/badge/license-Apache%202-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[ ![Download](https://api.bintray.com/packages/cicinnus0407/maven/RRMLib/images/download.svg) ](https://bintray.com/cicinnus0407/maven/RRMLib/_latestVersion)
+</br>
+Retrofit2+RxJava+MVP和常用工具类封装库
 ##用法
-- newest-version = 1.0.0
-- Android Studio
-    ```
-      compile 'com.cicinnus.RRMLib:retrofitlib:newest-version'
-    ```
+- 方式1
+    - newest-version = 1.0.2
+    - Android Studio
+        ```
+        compile 'com.cicinnus.RRMLib:retrofitlib:newest-version'
+        ```
+- 方式2
+    - Android Studio导入lib
+    -
+        ```
+        compile project(':rrmlib')
+        ```
 
 ## TODO ..期待更多的方法和功能
