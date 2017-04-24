@@ -1,6 +1,7 @@
 package com.cicinnus.retrofitlib.base;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -49,6 +50,19 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
     }
 
     /**
+     * 将调用链加入，直到onStop触发
+     *
+     * @param disposable 传入一个disposable实现类，即rx调用链
+     */
+    protected void addSubscribeUntilStop(Disposable disposable) {
+        if (disposables2Stop == null) {
+            disposables2Stop = new CompositeDisposable();
+        }
+        disposables2Stop.add(disposable);
+
+    }
+
+    /**
      * onStop触发停止调用链
      */
     private void unSubscribeWhenStop() {
@@ -67,15 +81,30 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
      * @param tag        加入调用链时的tag
      * @param disposable 传入一个disposable实现类，即rx调用链
      */
-    protected void addSubscribeUntilDestroy(String tag, Disposable disposable) {
+    protected void addSubscribeUntilDestroy(@NonNull String tag, Disposable disposable) {
         if (disposables2Destroy == null) {
             disposables2Destroy = new CompositeDisposable();
         }
         disposables2Destroy.add(disposable);
+        if(tag.equals("")||tag.isEmpty()){
+            throw new RuntimeException("tag不能为空字符串");
+        }
         if (disposable2DestroyArrayMap.containsKey(tag)) {
             throw new RuntimeException("存在相同的tag: " + tag);
         }
         disposable2DestroyArrayMap.put(tag, disposable);
+    }
+
+    /**
+     * 将调用链 加入，直到调用onDestroy
+     *
+     * @param disposable 传入一个disposable实现类，即rx调用链
+     */
+    protected void addSubscribeUntilDestroy(Disposable disposable) {
+        if (disposables2Destroy == null) {
+            disposables2Destroy = new CompositeDisposable();
+        }
+        disposables2Destroy.add(disposable);
     }
 
     /**

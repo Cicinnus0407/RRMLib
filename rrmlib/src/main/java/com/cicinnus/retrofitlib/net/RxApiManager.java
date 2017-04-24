@@ -8,11 +8,10 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 
 /**
- *
  * 手动管理Retrofit请求,取消请求方法
  */
 
-public class RxApiManager  {
+public class RxApiManager {
 
     private static RxApiManager instance = null;
 
@@ -39,7 +38,8 @@ public class RxApiManager  {
 
     /**
      * 将请求添加到管理队列中
-     * @param tag 单个请求的标记
+     *
+     * @param tag        单个请求的标记
      * @param disposable 请求
      */
     public void add(Object tag, Disposable disposable) {
@@ -47,11 +47,16 @@ public class RxApiManager  {
         compositeDisposable.add(disposable);
     }
 
+    public void add(Disposable disposable) {
+        compositeDisposable.add(disposable);
+    }
+
     /**
-     * 移除队列中某个请求
+     * 移除队列中某个tatg
+     *
      * @param tag 添加到队列时的标记
      */
-    public void remove(Object tag) {
+    public void removeByTag(Object tag) {
         if (!maps.isEmpty()) {
             maps.remove(tag);
         }
@@ -61,24 +66,37 @@ public class RxApiManager  {
         if (!maps.isEmpty()) {
             maps.clear();
         }
-        if(compositeDisposable.size()>0){
+        if (compositeDisposable.size() > 0) {
             compositeDisposable.clear();
         }
     }
 
 
     /**
+     * 根据 Disposable取消调用
+     * @param disposables 一个或多个Disposable
+     */
+    public void cancelByDisposable(Disposable... disposables) {
+        for (Disposable d : disposables) {
+            if (compositeDisposable.size() > 0) {
+                compositeDisposable.remove(d);
+            }
+        }
+    }
+
+    /**
      * 取消某个请求
+     *
      * @param tag
      */
-    public void cancel(Object tag) {
+    public void cancelByTag(Object tag) {
         if (maps.isEmpty()) {
             return;
         }
         if (maps.get(tag) == null) {
             return;
         }
-        if (compositeDisposable.size()>0) {
+        if (compositeDisposable.size() > 0) {
             compositeDisposable.remove(maps.get(tag));
             maps.remove(tag);
         }
@@ -93,7 +111,7 @@ public class RxApiManager  {
         }
         Set<Object> keys = maps.keySet();
         for (Object apiKey : keys) {
-            cancel(apiKey);
+            cancelByTag(apiKey);
         }
     }
 }

@@ -3,6 +3,7 @@ package com.cicinnus.retrofitmvprxjava2;
 import android.app.Activity;
 
 import com.cicinnus.retrofitlib.base.BaseMVPPresenter;
+import com.cicinnus.retrofitlib.net.error.ExceptionHandle;
 import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 import com.cicinnus.retrofitlib.utils.NetWorkUtil;
 
@@ -46,7 +47,7 @@ public class MainPresenter extends BaseMVPPresenter<MainContract.IMainView> impl
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
-                        mView.showError(throwable.getMessage());
+                        mView.showError(ExceptionHandle.handleException(throwable));
                     }
                 }, new Action() {
                     @Override

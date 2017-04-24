@@ -48,7 +48,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
             @Override
             public void onCancel(DialogInterface dialog) {
                 mPresenter.removeDisposableByTag();
-                RxApiManager.getInstance().cancel("d");
+                RxApiManager.getInstance().cancelByTag("d");
             }
         });
         tvContent = (TextView) findViewById(R.id.content);
@@ -108,6 +108,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
                     }
                 });
         RxApiManager.getInstance().add("d", d);
+        RxApiManager.getInstance().add(d);
 
     }
 
