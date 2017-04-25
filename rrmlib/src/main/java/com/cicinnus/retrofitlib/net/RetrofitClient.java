@@ -9,6 +9,9 @@ import java.io.File;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.MultipartBody;
@@ -87,17 +90,32 @@ public class RetrofitClient {
     /**
      * 单上传文件的封装
      *
-     * @param url                   完整的接口地址
-     * @param file                  需要上传的文件
-     * @param fileUploadObserver  上传监听回调
+     * @param url                完整的接口地址
+     * @param file               需要上传的文件
+     * @param fileUploadObserver 上传监听回调
      */
-    public void upLoadFile(String url, File file, FileUploadObserver<ResponseBody> fileUploadObserver) {
-        UploadFileRequestBody uploadFileRequestBody = new UploadFileRequestBody(file, fileUploadObserver);
+    public Disposable upLoadFile(String url, File file, final FileUploadObserver<ResponseBody> fileUploadObserver) {
+        UploadFileRequestBody<ResponseBody> uploadFileRequestBody = new UploadFileRequestBody<>(file, fileUploadObserver);
         MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), uploadFileRequestBody);
-        create(BASE_API.class)
+        return create(BASE_API.class)
                 .uploadFile(url, part)
                 .compose(SchedulersCompact.<ResponseBody>applyIoSchedulers())
-                .subscribe(fileUploadObserver);
+                .subscribe(new Consumer<ResponseBody>() {
+                    @Override
+                    public void accept(@NonNull ResponseBody responseBody) throws Exception {
+                        fileUploadObserver.onUpLoadSuccess(responseBody);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        fileUploadObserver.onUpLoadFail(throwable);
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        fileUploadObserver.onComplete();
+                    }
+                });
     }
 
 
@@ -109,8 +127,8 @@ public class RetrofitClient {
      * @param fileName             存储文件名
      * @param fileDownLoadObserver 监听回调
      */
-    public void downloadFile(@NonNull String url, final String destDir, final String fileName, final FileDownLoadObserver<File> fileDownLoadObserver) {
-        create(BASE_API.class)
+    public Disposable downloadFile(@NonNull String url, final String destDir, final String fileName, final FileDownLoadObserver<File> fileDownLoadObserver) {
+        return create(BASE_API.class)
                 .downLoadFile(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -122,7 +140,22 @@ public class RetrofitClient {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(fileDownLoadObserver);
+                .subscribe(new Consumer<File>() {
+                    @Override
+                    public void accept(@NonNull File file) throws Exception {
+                        fileDownLoadObserver.onDownLoadSuccess(file);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(@NonNull Throwable throwable) throws Exception {
+                        fileDownLoadObserver.onDownLoadFail(throwable);
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        fileDownLoadObserver.onComplete();
+                    }
+                });
     }
 
 }

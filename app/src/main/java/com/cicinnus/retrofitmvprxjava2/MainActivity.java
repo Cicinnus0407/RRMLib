@@ -11,10 +11,11 @@ import android.widget.Toast;
 import com.cicinnus.retrofitlib.base.BaseMVPActivity;
 import com.cicinnus.retrofitlib.net.RetrofitClient;
 import com.cicinnus.retrofitlib.net.RxApiManager;
-import com.cicinnus.retrofitlib.net.file_download.FileDownLoadObserver;
+import com.cicinnus.retrofitlib.net.file_upload.FileUploadObserver;
 import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 
 import java.io.File;
+import java.io.IOException;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -30,6 +31,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
     private ProgressDialog progressDialog;
     private ProgressDialog progressNum;
     private Disposable d;
+    //    private Disposable d;
 
     @Override
     public int getLayout() {
@@ -55,6 +57,12 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
         progressNum = new ProgressDialog(mContext);
         progressNum.setMax(100);
         progressNum.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressNum.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                RxApiManager.getInstance().cancelByDisposable(d);
+            }
+        });
     }
 
     @Override
@@ -85,15 +93,15 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
 //        mPresenter.getMainData();
         progressDialog.show();
 
-        d = RetrofitClient
+        RetrofitClient
                 .getInstance()
                 .create(Api.class)
-                .login("wjhapp","wjh123")
+                .login("wjhapp", "wjh123")
                 .compose(SchedulersCompact.<ResponseBody>applyIoSchedulers())
                 .subscribe(new Consumer<ResponseBody>() {
                     @Override
                     public void accept(@NonNull ResponseBody responseBody) throws Exception {
-                       tvContent.setText(responseBody.string());
+                        tvContent.setText(responseBody.string());
                     }
                 }, new Consumer<Throwable>() {
                     @Override
@@ -107,35 +115,60 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
                         Log.d("showContent----", "showContent: ");
                     }
                 });
-        RxApiManager.getInstance().add("d", d);
-        RxApiManager.getInstance().add(d);
+//        RxApiManager.getInstance().add("d", d);
 
     }
 
     public void download(View v) {
         progressNum.show();
 
-        RetrofitClient
+
+//        d = RetrofitClient
+//                .getInstance()
+//                .downloadFile("http://192.168.191.1:8080/UploadFileServer/download?fileName=libmupdf.so",
+//                        Environment.getExternalStorageDirectory().getAbsolutePath(), "libmupdf.so", new FileDownLoadObserver<File>() {
+//                            @Override
+//                            public void onDownLoadSuccess(File file) {
+//                                progressNum.dismiss();
+//                                Toast.makeText(mContext, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+//
+//                            }
+//
+//                            @Override
+//                            public void onDownLoadFail(Throwable throwable) {
+//                                progressNum.dismiss();
+//                                Toast.makeText(mContext, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                            @Override
+//                            public void onProgress(int progress, long total) {
+//                                progressNum.setProgress(progress);
+//                            }
+//                        });
+        d = RetrofitClient
                 .getInstance()
-                .downloadFile("url",
-                        Environment.getExternalStorageDirectory().getAbsolutePath(), "test.txt", new FileDownLoadObserver<File>() {
-                            @Override
-                            public void onDownLoadSuccess(File file) {
-                                progressNum.dismiss();
-                                Toast.makeText(mContext, file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                .upLoadFile("http://192.168.191.1:8080/UploadFileServer/upload", new File(Environment.getExternalStorageDirectory() + "/ddmsrec.mp4"), new FileUploadObserver<ResponseBody>() {
+                    @Override
+                    public void onUpLoadSuccess(ResponseBody responseBody) {
+                        progressNum.dismiss();
+                        try {
+                            Toast.makeText(mContext, responseBody.string(), Toast.LENGTH_SHORT).show();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                            }
+                    @Override
+                    public void onUpLoadFail(Throwable e) {
+                        progressNum.dismiss();
+                        Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
 
-                            @Override
-                            public void onDownLoadFail(Throwable throwable) {
-                                progressNum.dismiss();
-                                Toast.makeText(mContext, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onProgress(int progress,long total) {
-                                progressNum.setProgress(progress);
-                            }
-                        });
+                    @Override
+                    public void onProgress(int progress) {
+                        progressNum.setProgress(progress);
+                    }
+                });
+        RxApiManager.getInstance().add(d);
     }
 }

@@ -19,4 +19,6 @@ public interface Api   {
     @GET("http://192.168.191.1:8080/api/app/checkUser.do")
     Observable<ResponseBody> login(@Query("userName")String userName, @Query("password")String password);
 
+
+
 }

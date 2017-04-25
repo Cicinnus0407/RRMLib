@@ -1,27 +1,24 @@
 package com.cicinnus.retrofitlib.net.file_upload;
 
-import io.reactivex.observers.DefaultObserver;
-
 /**
  * 上传文件的回调
  */
 
-public abstract class FileUploadObserver<T> extends DefaultObserver<T> {
+public abstract class FileUploadObserver<T>{
 
 
 
-    @Override
-    public void onNext(T t) {
-        onUpLoadSuccess(t);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        onUpLoadFail(e);
-    }
-
+//    @Override
+//    public void onNext(T t) {
+//        onUpLoadSuccess(t);
+//    }
+//
+//    @Override
+//    public void onError(Throwable e) {
+//        onUpLoadFail(e);
+//    }
+//
     //可以重写，具体可由子类实现
-    @Override
     public void onComplete() {
 
     }

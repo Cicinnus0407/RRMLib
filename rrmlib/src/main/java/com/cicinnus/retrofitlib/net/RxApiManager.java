@@ -16,7 +16,7 @@ public class RxApiManager {
     private static RxApiManager instance = null;
 
     //键值对形式保存单个请求
-    private ArrayMap<Object, Disposable> maps;
+    private ArrayMap<String, Disposable> maps;
     //请求队列
     private CompositeDisposable compositeDisposable;
 
@@ -40,23 +40,17 @@ public class RxApiManager {
      * 将请求添加到管理队列中
      *
      * @param tag        单个请求的标记
-     * @param disposable 请求
+     * @param disposable 请求调用链
      */
-    public void add(Object tag, Disposable disposable) {
+    public void add(String tag, Disposable disposable) {
         maps.put(tag, disposable);
         compositeDisposable.add(disposable);
     }
-
-    public void add(Disposable disposable) {
-        compositeDisposable.add(disposable);
-    }
-
     /**
-     * 移除队列中某个tatg
-     *
+     * 移除队列中某个请求
      * @param tag 添加到队列时的标记
      */
-    public void removeByTag(Object tag) {
+    public void remove(String tag) {
         if (!maps.isEmpty()) {
             maps.remove(tag);
         }
@@ -66,30 +60,16 @@ public class RxApiManager {
         if (!maps.isEmpty()) {
             maps.clear();
         }
-        if (compositeDisposable.size() > 0) {
+        if(compositeDisposable.size()>0){
             compositeDisposable.clear();
-        }
-    }
-
-
-    /**
-     * 根据 Disposable取消调用
-     * @param disposables 一个或多个Disposable
-     */
-    public void cancelByDisposable(Disposable... disposables) {
-        for (Disposable d : disposables) {
-            if (compositeDisposable.size() > 0) {
-                compositeDisposable.remove(d);
-            }
         }
     }
 
     /**
      * 取消某个请求
-     *
      * @param tag
      */
-    public void cancelByTag(Object tag) {
+    public void cancelByTag(String tag) {
         if (maps.isEmpty()) {
             return;
         }
@@ -109,8 +89,8 @@ public class RxApiManager {
         if (maps.isEmpty()) {
             return;
         }
-        Set<Object> keys = maps.keySet();
-        for (Object apiKey : keys) {
+        Set<String> keys = maps.keySet();
+        for (String apiKey : keys) {
             cancelByTag(apiKey);
         }
     }

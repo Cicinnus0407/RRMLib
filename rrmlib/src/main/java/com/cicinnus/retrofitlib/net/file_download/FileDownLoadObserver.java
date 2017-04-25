@@ -5,28 +5,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.reactivex.observers.DefaultObserver;
 import okhttp3.ResponseBody;
 
 /**
  * Created by Cicinnus on 2017/3/31.
  */
 
-public abstract class FileDownLoadObserver<T> extends DefaultObserver<T> {
+public abstract class FileDownLoadObserver<T> {
 
-
-    @Override
-    public void onNext(T t) {
-        onDownLoadSuccess(t);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        onDownLoadFail(e);
-    }
 
     //可以重写，具体可由子类实现
-    @Override
     public void onComplete() {
     }
     //下载成功的回调

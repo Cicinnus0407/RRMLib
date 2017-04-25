@@ -26,7 +26,7 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
     public BaseMVPPresenter(Activity activity, T view) {
         this.mActivity = activity;
         this.mView = view;
-        disposable2StopArrayMap = new ArrayMap<>();
+
         disposable2DestroyArrayMap = new ArrayMap<>();
     }
 
@@ -41,10 +41,16 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
         if (disposables2Stop == null) {
             disposables2Stop = new CompositeDisposable();
         }
-        disposables2Stop.add(disposable);
-        if (disposable2StopArrayMap.containsKey(tag)) {
-            throw new RuntimeException("存在相同的tag: " + tag);
+        if( disposable2StopArrayMap==null){
+            disposable2StopArrayMap = new ArrayMap<>();
         }
+        if(tag.equals("")||tag.isEmpty()){
+            throw new Error("tag不能为空字符串");
+        }
+        if (disposable2StopArrayMap.containsKey(tag)) {
+            throw new Error("存在相同的tag: " + tag);
+        }
+        disposables2Stop.add(disposable);
         disposable2StopArrayMap.put(tag, disposable);
 
     }
@@ -85,13 +91,16 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
         if (disposables2Destroy == null) {
             disposables2Destroy = new CompositeDisposable();
         }
-        disposables2Destroy.add(disposable);
+        if(disposable2DestroyArrayMap==null){
+            disposable2DestroyArrayMap = new ArrayMap<>();
+        }
         if(tag.equals("")||tag.isEmpty()){
-            throw new RuntimeException("tag不能为空字符串");
+            throw new Error("tag不能为空字符串");
         }
         if (disposable2DestroyArrayMap.containsKey(tag)) {
-            throw new RuntimeException("存在相同的tag: " + tag);
+            throw new Error("存在相同的tag: " + tag);
         }
+        disposables2Destroy.add(disposable);
         disposable2DestroyArrayMap.put(tag, disposable);
     }
 
@@ -138,7 +147,7 @@ public class BaseMVPPresenter<T> implements ICorePresenter {
     }
 
     /**
-     * 移除多个订阅
+     * 通过tag移除多个调用链
      *
      * @param tags 订阅时候的tag
      */
