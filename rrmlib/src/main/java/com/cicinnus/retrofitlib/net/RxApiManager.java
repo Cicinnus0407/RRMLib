@@ -46,8 +46,14 @@ public class RxApiManager {
         maps.put(tag, disposable);
         compositeDisposable.add(disposable);
     }
+
+    public void add(Disposable disposable) {
+        compositeDisposable.add(disposable);
+    }
+
     /**
      * 移除队列中某个请求
+     *
      * @param tag 添加到队列时的标记
      */
     public void remove(String tag) {
@@ -60,16 +66,34 @@ public class RxApiManager {
         if (!maps.isEmpty()) {
             maps.clear();
         }
-        if(compositeDisposable.size()>0){
+        if (compositeDisposable.size() > 0) {
             compositeDisposable.clear();
+        }
+    }
+
+
+    /**
+     * 根据 Disposable取消调用
+     *
+     * @param disposables 一个或多个Disposable
+     */
+    public void cancelByDisposable(Disposable... disposables) {
+        for (Disposable d : disposables) {
+            if (compositeDisposable.size() > 0) {
+                compositeDisposable.remove(d);
+            }
         }
     }
 
     /**
      * 取消某个请求
+     *
      * @param tag
      */
     public void cancelByTag(String tag) {
+        if (maps == null) {
+            throw new Error(String.format("该tag：%s尚未加入调用链", tag));
+        }
         if (maps.isEmpty()) {
             return;
         }
@@ -94,5 +118,7 @@ public class RxApiManager {
             cancelByTag(apiKey);
         }
     }
+
+
 }
 

@@ -163,4 +163,13 @@ public class ResultBean {
             this.title = title;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ResultBean{" +
+                "date='" + date + '\'' +
+                ", stories=" + stories +
+                ", top_stories=" + top_stories +
+                '}';
+    }
 }

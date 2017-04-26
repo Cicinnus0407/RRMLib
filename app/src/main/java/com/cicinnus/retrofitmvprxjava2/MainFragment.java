@@ -14,6 +14,5 @@ public class MainFragment extends BaseMVPFragment {
 
     @Override
     protected void initEventAndData() {
-        findViewById(R.id.content);
     }
 }

@@ -1,41 +1,12 @@
 package com.cicinnus.retrofitlib.net;
 
-import io.reactivex.observers.DefaultObserver;
-
 /**
  * 基础回调
  */
 
-public abstract class BaseObserver<T> extends DefaultObserver<T> {
+public abstract class BaseObserver<T>  {
 
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        onSubscribeStart();
-    }
-    @Override
-    public void onNext(T t) {
-        onSuccess(t);
-    }
-
-    @Override
-    public void onError(Throwable e) {
-        onFail(e);
-    }
-
-    @Override
-    public void onComplete() {
-        onSubscribeComplete();
-    }
-
-
-    /**
-     * 可选开始请求的回到，可加入Loading显示
-     */
-    protected void onSubscribeStart(){
-
-    }
     /**
      * 请求成功回调
      * @param t bean

@@ -22,13 +22,12 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Cicinnus on 2017/3/28.
+ * Retrofit的主要调用函数
  */
 
 public class RetrofitClient {
     private static RetrofitClient mInstance;
     private static Retrofit retrofit;
-    private OkHttpClient mOkHttpClient;
     private static String mBaseUrl;
 
     private RetrofitClient(OkHttpClient okHttpClient, String baseUrl) {
@@ -157,5 +156,6 @@ public class RetrofitClient {
                     }
                 });
     }
+
 
 }

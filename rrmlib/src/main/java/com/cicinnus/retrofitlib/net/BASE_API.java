@@ -17,8 +17,6 @@ import retrofit2.http.Url;
 
 interface BASE_API {
 
-    String BASE_URL = "http://";
-
     @Multipart
     @POST
     Observable<ResponseBody> uploadFile(@NonNull @Url String url, @Part MultipartBody.Part file);

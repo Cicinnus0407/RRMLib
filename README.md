@@ -23,10 +23,17 @@ Retrofit2+RxJava+MVP和常用工具类封装库
  
         @param 1 OkHttpClient ,可根据自行需要进行配置（例如拦截Cookie和添加日志）
         @parma 2 BASE_URL ,必须填入，因为retorift在构建的时候必须传入一个baseUrl（格式为"http://192.168.191.1:8080/xxx/xx..."）
-        RetrofitClient.initClient_BaseUrl(OkHttpManager.getInstance(), Api.BASE_URL);
+        
+        public class BaseApplication extends Application {
+            @Override
+            public void onCreate() {
+                super.onCreate();
+                RetrofitClient.initClient_BaseUrl(OkHttpManager.getInstance(), Api.BASE_URL);
+            }
+        }
 
         
- - 2 . get请求
+ - 2 . 普通get请求
  
         //接口定义       
         @GET("4/news/latest")
@@ -46,8 +53,6 @@ Retrofit2+RxJava+MVP和常用工具类封装库
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
                        //请求发生错误的时候调用
-                       //封装部分错误信息
-                      String msg = ExceptionHandle.handleException(throwable);
                     }
                 }, new Action() {
                     @Override

@@ -9,6 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * BaseFragment，拥有懒加载方法
  */
@@ -18,9 +21,8 @@ public abstract class BaseMVPFragment<T extends ICorePresenter> extends Fragment
     protected T mPresenter;
     private boolean isInit;
     private boolean isLoad;
-    private int mViewId;
     private View rootView;
-
+    private Unbinder mUnbinder;
     @Override
     public void onAttach(Context context) {
         mContext = (Activity) context;
@@ -32,22 +34,10 @@ public abstract class BaseMVPFragment<T extends ICorePresenter> extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(getLayoutId(), container, false);
         isInit = true;
+        mUnbinder = ButterKnife.bind(this, rootView);
         return rootView;
     }
 
-    /**
-     * 与Activity类似的findViewById
-     *
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    protected <T extends View> T findViewById(int id) {
-        if (rootView == null) {
-            return null;
-        }
-
-        return (T) rootView.findViewById(id);
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -98,6 +88,7 @@ public abstract class BaseMVPFragment<T extends ICorePresenter> extends Fragment
         super.onDestroyView();
         isInit = false;
         isLoad = false;
+        if (mUnbinder != Unbinder.EMPTY) mUnbinder.unbind();
     }
 
 

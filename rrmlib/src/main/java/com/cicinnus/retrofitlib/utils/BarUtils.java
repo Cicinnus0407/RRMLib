@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
  *     author: Blankj
  *     blog  : http://blankj.com
  *     time  : 2016/9/23
- *     desc  : 栏相关工具类
+ *     desc  : 状态栏相关工具类
  * </pre>
  */
 public class BarUtils {

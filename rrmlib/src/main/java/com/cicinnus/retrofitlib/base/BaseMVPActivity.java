@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * BaseActivity
  */
@@ -12,12 +15,13 @@ import android.support.v7.app.AppCompatActivity;
 public abstract class BaseMVPActivity<T extends ICorePresenter> extends AppCompatActivity {
     protected Activity mContext;
     protected T mPresenter;
-
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
+        unbinder = ButterKnife.bind(this);
         mContext = this;
         mPresenter = getCorePresenter();
         initEventAndData();
@@ -44,6 +48,9 @@ public abstract class BaseMVPActivity<T extends ICorePresenter> extends AppCompa
         if (mPresenter != null) {
             mPresenter.onViewDestroy();
         }
+        if (unbinder != Unbinder.EMPTY) {
+            unbinder.unbind();
+        }
     }
 
     /**
@@ -67,6 +74,7 @@ public abstract class BaseMVPActivity<T extends ICorePresenter> extends AppCompa
      * 初始化时间和数据,调用在onCreate方法中
      */
     protected abstract void initEventAndData();
+
     /**
      * 带Bundle的方法,用于恢复Fragment获取其他属性的方法时候可以调用
      */

@@ -17,6 +17,7 @@ import com.cicinnus.retrofitlib.rx.SchedulersCompact;
 import java.io.File;
 import java.io.IOException;
 
+import butterknife.BindView;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
@@ -25,7 +26,7 @@ import okhttp3.ResponseBody;
 
 public class MainActivity extends BaseMVPActivity<MainPresenter> implements MainContract.IMainView {
 
-
+    @BindView(R.id.content)
     TextView tvContent;
 
     private ProgressDialog progressDialog;
@@ -53,7 +54,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
                 RxApiManager.getInstance().cancelByTag("d");
             }
         });
-        tvContent = (TextView) findViewById(R.id.content);
+//        tvContent = (TextView) findViewById();
         progressNum = new ProgressDialog(mContext);
         progressNum.setMax(100);
         progressNum.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -96,7 +97,7 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
         RetrofitClient
                 .getInstance()
                 .create(Api.class)
-                .login("wjhapp", "wjh123")
+                .get("http://httpbin.org/get?username=cicinnus&age=22")
                 .compose(SchedulersCompact.<ResponseBody>applyIoSchedulers())
                 .subscribe(new Consumer<ResponseBody>() {
                     @Override
@@ -106,12 +107,14 @@ public class MainActivity extends BaseMVPActivity<MainPresenter> implements Main
                 }, new Consumer<Throwable>() {
                     @Override
                     public void accept(@NonNull Throwable throwable) throws Exception {
+                        progressDialog.dismiss();
                         Log.e("错误信息----", "showError: " + throwable.getMessage());
 
                     }
                 }, new Action() {
                     @Override
                     public void run() throws Exception {
+                        progressDialog.dismiss();
                         Log.d("showContent----", "showContent: ");
                     }
                 });
